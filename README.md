@@ -214,7 +214,6 @@ Offensive Security Researcher · Penetration Tester · Red Team Instructor
 
 - GitHub: [@alisalive](https://github.com/alisalive)
 - Instagram: [@alisalive.exe](https://instagram.com/alisalive.exe)
-- Certifications: eJPTv2 · CRTA · Web-RTA
 
 ---
 
