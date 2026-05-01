@@ -1,123 +1,225 @@
+<div align="center">
+
+```
+   ______    __     _____ _________    _   ___   ____________
+  / ____/   / /    / ___// ____/   |  / | / / | / / ____/ __ \
+ / /   __  / /_____\__ \/ /   / /| | /  |/ /  |/ / __/ / /_/ /
+/ /___/ /_/ /_____/__/ / /___/ ___ |/ /|  / /|  / /___/ _, _/
+\____/\____/     /____/\____/_/  |_/_/ |_/_/ |_/_____/_/ |_|
+```
+
 # CJ-SCANNER v2.0
 
-Clickjacking vulnerability scanner with dual-layer detection, multi-threading, and professional reporting.
+**A professional, multi-threaded Clickjacking (UI Redressing) vulnerability scanner**  
+**built for penetration testers and security researchers.**
 
-**Author:** Shikhali Jamalzade  
-**GitHub:** [alisalive](https://github.com/alisalive)
+[![Python](https://img.shields.io/badge/Python-3.10%2B-blue?style=flat-square&logo=python)](https://python.org)
+[![Platform](https://img.shields.io/badge/Platform-Linux%20%7C%20Windows%20%7C%20macOS-lightgrey?style=flat-square)](https://github.com/alisalive/cj-scanner)
+[![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
+[![Version](https://img.shields.io/badge/Version-2.0-red?style=flat-square)](https://github.com/alisalive/cj-scanner)
+[![Author](https://img.shields.io/badge/Author-alisalive-orange?style=flat-square)](https://github.com/alisalive)
+
+</div>
+
+---
+
+## Overview
+
+Clickjacking (also known as UI Redressing) is a web attack in which a malicious page tricks users into clicking on invisible or disguised elements from another website — potentially leading to unauthorized actions, credential theft, or account takeover.
+
+**CJ-SCANNER** automates the detection of missing or misconfigured clickjacking protections across single targets or large domain lists. It performs dual-layer HTTP header analysis, HTML body inspection, and cookie attribute checks — all in parallel — and generates color-coded terminal output, professional HTML reports, and machine-readable JSON exports.
+
+---
+
+## Demo
+
+```
+  Scanning 3 target(s) with 10 thread(s)...
+
+  Target  : https://github.com/
+  Status  : 200  (0.849s)
+  XFO     : deny
+  CSP FA  : frame-ancestors 'none'
+  RESULT  : Protected
+
+  Target  : https://dtx.gov.az/az/
+  Status  : 200  (0.414s)
+  XFO     : NOT SET
+  CSP FA  : NOT SET
+  RESULT  : *** VULNERABLE TO CLICKJACKING ***
+
+  ==================================================
+  Scan complete — 3 target(s)
+  Vulnerable : 1  |  Protected : 2  |  Errors : 0
+  ==================================================
+```
 
 ---
 
 ## Features
 
-| Feature | Details |
+| Feature | Description |
 |---|---|
-| Dual-layer detection | `X-Frame-Options` header + `CSP frame-ancestors` directive |
-| Meta tag fallback | Parses HTML body for `<meta http-equiv="X-Frame-Options">` |
-| Multi-threading | `ThreadPoolExecutor`, default 10 threads (`-t` flag) |
-| SSL fallback | Automatically retries over HTTP if HTTPS fails |
-| Retry logic | 2 retries on connection/timeout errors with backoff |
-| Redirect tracking | Follows redirects, records final URL |
-| Response timing | Per-domain elapsed time in seconds |
-| Cookie analysis | Flags cookies missing `SameSite` or set to `SameSite=None` |
-| HTML report | Dark-themed, professional, self-contained file |
-| JSON export | Machine-readable results |
-| Vulnerable report | `vulnerable_report.txt` auto-created; deleted if no vulns found |
-| Interactive mode | Prompts for input when no CLI flags are provided |
-| Browser UA | Mimics Chrome 124 to reduce bot-blocking |
-
----
-
-## Installation
-
-### Standard (run with `python cj_scanner.py`)
-```bash
-git clone https://github.com/alisalive/cj-scanner.git
-cd cj-scanner
-pip install -r requirements.txt
-```
-
-### Global command (run as `cj-scanner` from anywhere)
-```bash
-pip install -e .
-cj-scanner -u github.com
-```
-
-Python 3.11+ required (`datetime.UTC`, `X | Y` union type hints).
-
----
-
-## Usage
-
-### Single target
-```bash
-python cj_scanner.py -u example.com
-python cj_scanner.py -u https://example.com
-```
-
-### Scan a list of domains
-```bash
-python cj_scanner.py -f domains.txt
-```
-
-### Full options
-```bash
-python cj_scanner.py -f domains.txt -t 20 --timeout 15 --html --json
-python cj_scanner.py -f domains.txt --html report.html
-```
-
-### Interactive mode (no arguments)
-```bash
-python cj_scanner.py
-```
-The scanner will prompt for target, threads, timeout, and output format.
-
----
-
-## CLI Reference
-
-| Flag | Default | Description |
-|---|---|---|
-| `-u URL` | — | Single target URL or domain |
-| `-f FILE` | — | File with one target per line (comments with `#` ignored) |
-| `-t N` | `10` | Number of concurrent threads |
-| `--timeout N` | `10` | Per-request timeout in seconds |
-| `--html [FILE]` | off | Generate HTML report; default name `cj_scanner_report.html` |
-| `--json` | off | Export results as a JSON file |
-| `--no-meta` | off | Skip meta tag detection (faster on large lists) |
-
----
-
-## Output Files
-
-| File | Created when |
-|---|---|
-| `vulnerable_report.txt` | At least one vulnerable target found (auto-deleted if none) |
-| `cj_scanner_report.html` (or custom name) | `--html` / `--html out.html` |
-| `cj_results_<timestamp>.json` | `--json` flag is set |
+| **Dual-Layer Detection** | Checks both `X-Frame-Options` and `CSP: frame-ancestors` headers independently |
+| **Multi-Threaded Engine** | Concurrent scanning with configurable thread count (default: 10) |
+| **HTML Body Inspection** | Detects meta-tag based `X-Frame-Options` (ignored by browsers but flagged) |
+| **Cookie SameSite Analysis** | Inspects `SameSite` cookie attributes as an additional security signal |
+| **SSL Fallback** | Automatically retries over HTTP if HTTPS connection fails |
+| **Retry Logic** | 2x automatic retries on connection errors before marking a domain as failed |
+| **HTML Report** | Dark-themed professional report with statistics dashboard and color-coded verdicts |
+| **JSON Export** | Machine-readable structured output for pipeline integration |
+| **Redirect Tracking** | Follows and logs redirect chains, reporting the final destination URL |
+| **Global Command** | Installable as a system-wide `cj-scanner` command on Linux and Windows |
+| **Cross-Platform** | Kali Linux, Ubuntu, Windows, macOS |
 
 ---
 
 ## Detection Logic
 
-A target is marked **VULNERABLE** only when **all three** of the following are absent:
+CJ-SCANNER evaluates each target across four independent checks:
 
-1. `X-Frame-Options` response header (`DENY` / `SAMEORIGIN` / `ALLOW-FROM`)
-2. `frame-ancestors` directive inside the `Content-Security-Policy` header
-3. `<meta http-equiv="X-Frame-Options">` tag in the HTML body
+| Check | Secure Values | Misconfigured / Absent |
+|---|---|---|
+| `X-Frame-Options` header | `DENY`, `SAMEORIGIN` | Missing or `ALLOW-FROM` (deprecated) |
+| `CSP: frame-ancestors` directive | `'none'`, `'self'` | Missing, `*`, or overly permissive origin |
+| HTML `<meta>` X-Frame-Options | — | Present but ignored by browsers (flagged) |
+| Cookie `SameSite` attribute | `Strict`, `Lax` | `None` or absent (informational) |
 
----
+**Verdict:**
+- **VULNERABLE** — Both `X-Frame-Options` and `CSP: frame-ancestors` are absent or misconfigured
+- **Protected** — At least one header-based protection is correctly configured
 
-## domains.txt format
-
-```
-# Comments are ignored
-example.com
-https://target2.com
-target3.org
-```
+> Modern browsers prioritize `frame-ancestors` over `X-Frame-Options`. CJ-SCANNER evaluates both independently and reports each one's state clearly.
 
 ---
 
-## Legal
+## Installation
 
-For authorized security testing only. You are responsible for obtaining proper permission before scanning any target. The author assumes no liability for misuse.
+### Kali Linux (Recommended)
+
+```bash
+git clone https://github.com/alisalive/cj-scanner.git
+cd cj-scanner
+chmod +x setup_kali.sh
+sudo ./setup_kali.sh
+```
+
+After setup, `cj-scanner` is available as a global command from any directory.
+
+### Windows
+
+```cmd
+git clone https://github.com/alisalive/cj-scanner.git
+cd cj-scanner
+pip install -r requirements.txt
+python cj_scanner.py -u target.com
+```
+
+### Any OS (Manual)
+
+```bash
+git clone https://github.com/alisalive/cj-scanner.git
+cd cj-scanner
+pip install -r requirements.txt --break-system-packages
+python cj_scanner.py -u target.com
+```
+
+**Requirements:** Python 3.10+
+
+---
+
+## Usage
+
+### Single URL
+
+```bash
+cj-scanner -u https://example.com
+```
+
+### Scan from file
+
+```bash
+cj-scanner -f domains.txt
+```
+
+### Full scan with HTML and JSON reports
+
+```bash
+cj-scanner -f domains.txt -t 20 --html report.html --json results.json
+```
+
+### Domains file format
+
+```
+# One domain per line. Lines starting with # are ignored.
+google.com
+https://example.com
+subdomain.target.org
+```
+
+---
+
+## Options
+
+```
+  -u, --url URL         Single target URL or domain
+  -f, --file FILE       Path to .txt file with one domain per line
+  -t, --threads N       Number of concurrent threads (default: 10)
+  --html [FILE]         Save HTML report (default: cj_scanner_report.html)
+  --json FILE           Save JSON report
+  --timeout SEC         Request timeout in seconds (default: 10)
+  --no-meta             Skip HTML body meta-tag inspection
+  -v, --verbose         Show all results including protected domains
+  -h, --help            Show help message
+```
+
+---
+
+## Output Files
+
+| File | Location | Description |
+|---|---|---|
+| `vulnerable_report.txt` | `~/cj-scanner-reports/` | Auto-generated list of vulnerable URLs. Deleted if no vulnerabilities found. |
+| `cj_scanner_report.html` | `~/cj-scanner-reports/` | Dark-themed HTML report with full statistics and per-domain details |
+| `results.json` | `~/cj-scanner-reports/` | Structured JSON export for programmatic use |
+
+---
+
+## Project Structure
+
+```
+cj-scanner/
+├── cj_scanner.py        # Main scanner — all logic in a single portable script
+├── setup_kali.sh        # One-shot installer for Kali Linux / Debian
+├── requirements.txt     # Python dependencies
+├── domains.txt          # Example target list
+└── README.md
+```
+
+---
+
+## Security Notice
+
+> This tool is developed **strictly for authorized security testing and educational purposes.**  
+> Always obtain **explicit written permission** from the target system owner before scanning.  
+> The author assumes no responsibility for misuse or any legal consequences arising from unauthorized use.  
+> Unauthorized use may violate local, national, or international cybersecurity laws.
+
+---
+
+## Author
+
+**Shikhali Jamalzade**  
+Offensive Security Researcher · Penetration Tester · Red Team Instructor
+
+- GitHub: [@alisalive](https://github.com/alisalive)
+- Instagram: [@alisalive.exe](https://instagram.com/alisalive.exe)
+- Certifications: eJPTv2 · CRTA · Web-RTA
+
+---
+
+<div align="center">
+
+*Built for authorized security research. Use responsibly.*
+
+</div>
